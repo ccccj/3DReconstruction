@@ -1,0 +1,239 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>面向刚体的三维重建</title>
+<link rel="icon" href="images/logo.png" sizes="32x32">
+<link rel="stylesheet" type="text/css" href="css/webuploader.css" />
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="css/BeAlert.css">
+<script src="js/BeAlert.js"></script>
+
+<style>
+	.width_auto{
+		width: 900px;
+		margin: 100px auto;
+	}
+
+</style>
+</head>
+
+<body style="background:#f9f9f9;">
+	<header style="background-image:url(images/bg.png); background-size:100% 100%; height:500px;">
+		<ul class="breadcrumb" style="background-color: #333333;">
+			<div class="container">
+	          	<div class="row">
+				  	<div class="col-md-4" style="color: #ffffff; font-size:18px;">
+						<img src="images/logo.png" width="42" height="42">
+						三维重建
+				  	</div>
+					<div class="col-md-8">
+						<ul class="nav nav-pills" style="font-size:16px;">
+						   	<li><a href="index.html" style="color: #A6A6A6;">主页</a></li>
+						   	<li><a href="calibration.html" style="color: #A6A6A6;">相机标定</a></li>
+					 	</ul>
+				  	</div>
+				</div>
+			</div>
+		</ul>
+		<div class="container" style="width: 1000px;">
+	      <div class="row">
+			  <div class="col-md-3"></div>
+				<div class="col-md-6" style="color: #ffffff; font-size:43px;">
+					<img src="images/logo.png" width="62" height="62">
+					面向刚体的三维重建
+				</div>
+				<div class="col-md-3"></div>
+			</div>
+		</div>
+		<div class="container" style="width: 1200px;">
+		  <div class="row">
+			  <div class="col-md-1"></div>
+				<div class="col-md-10" style="color: #ffffff; font-size:25px;">
+					<div class="col-md-5"><hr></div>
+					<div class="col-md-2">绘制3D未来</div>
+					<div class="col-md-5"><hr></div>
+				</div>
+				<div class="col-md-1"></div>
+			</div>
+		</div>
+		<br>
+		<div class="container" style="width: 1000px; color:#ffffff; font-size:20px;">
+		  	<div class="row">
+			  	<div class="col-md-3">
+				</div>
+				<div class="col-md-6" style="font-size:17px;">
+					1.重建所需内容：
+					<p></p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a)&nbsp;相机内参数（包含焦距、畸变参数等）&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				        <a href="calibration.html" class="btn btn-info btn-sm">
+				          	点此计算参数<span class="glyphicon glyphicon-chevron-right"></span>
+				        </a>
+					</p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b)&nbsp;两张对物体拍摄的图像</p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c)&nbsp;meshlab软件</p>
+					<p></p>
+					2.重建步骤：
+					<p></p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b)&nbsp;输入上一步计算得出的相机内参数</p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b)&nbsp;上传图像，等待一会下载&nbsp;"reconstructed.ply"&nbsp;文件</p>
+					<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;c)&nbsp;将下载的文件在meshlab软件打开即可</p>
+
+				</div>
+				<div class="col-md-3">
+				</div>
+			</div>
+		</div>
+  	</header>
+
+
+	<div class="width_auto">
+		<div class="panel panel-danger" style="text-align: center;">
+		    <div class="panel-heading">
+		        <h3 class="panel-title" style="font-size:25px;">请输入相关相机参数</h3>
+		    </div>
+			<br>
+			<form role="form">
+				<label for="firstname" class="col-sm-2 control-label" style="margin-top:10px;">焦距</label>
+
+				<div class="row">
+			    	<div class="col-lg-2">
+						<input type="text" id="focal" class="form-control" style="margin-top:10px;">
+				    </div>
+				</div>
+				<label for="firstname" class="col-sm-2 control-label" style="margin-top:10px;">径向畸变</label>
+
+				<div class="row">
+			    	<div class="col-lg-2">
+						<input type="text" id="dist1" class="form-control" style="margin-top:10px;">
+				    </div>
+					<div class="col-lg-2">
+						<input type="text" id="dist2" class="form-control" style="margin-top:10px;">
+				    </div>
+					<div class="col-lg-2">
+						<input type="text" id="dist3" class="form-control"  style="margin-top:10px;">
+				    </div>
+				</div>
+				<label for="firstname" class="col-sm-2 control-label" style="margin-top:10px;">切向畸变</label>
+
+				<div class="row">
+			    	<div class="col-lg-2">
+						<input type="text" id="dist4" class="form-control" style="margin-top:10px;">
+				    </div>
+					<div class="col-lg-2">
+						<input type="text" id="dist5" class="form-control" style="margin-top:10px;">
+				    </div>
+				</div>
+
+				<label for="firstname" class="col-sm-2 control-label" style="margin-top:10px;">内参矩阵</label>
+
+				<div class="row">
+			    	<div class="col-lg-2">
+						<input type="text" id="k00" class="form-control" style="margin-top:10px;">
+				    </div>
+					<div class="col-lg-2">
+						<p type="text" class="form-control" style="margin-top:10px;">0</p>
+				    </div>
+					<div class="col-lg-2">
+						<input type="text" id="k02" class="form-control" placeholder="约等于宽除以2" style="margin-top:10px;">
+				    </div>
+
+				</div>
+				<label for="firstname" class="col-sm-2 control-label" style="margin-top:10px;"></label>
+				<div class="row">
+			    	<div class="col-lg-2">
+						<p type="text" class="form-control" style="margin-top:10px;">0</p>
+				    </div>
+					<div class="col-lg-2">
+						<input type="text" id="k11" class="form-control" style="margin-top:10px;">
+				    </div>
+					<div class="col-lg-2">
+						<input type="text" id="k12" class="form-control" placeholder="约等于高除以2" style="margin-top:10px;">
+				    </div>
+
+				</div>
+				<label for="firstname" class="col-sm-2 control-label" style="margin-top:10px;"></label>
+				<div class="row">
+			    	<div class="col-lg-2">
+						<p type="text" class="form-control" style="margin-top:10px;">0</p>
+				    </div>
+					<div class="col-lg-2">
+						<p type="text" class="form-control" style="margin-top:10px;">0</p>
+				    </div>
+					<div class="col-lg-2">
+						<p type="text" class="form-control" style="margin-top:10px;">1</p>
+				    </div>
+				</div>
+			</form>
+			<br>
+		</div>
+
+		<br><br><br>
+
+		<div class="panel panel-danger" style="text-align: center;">
+			<div class="panel-heading">
+				<h3 class="panel-title" style="font-size:25px;">请上传图片</h3>
+			</div>
+
+			<div id="container">
+		        <!--头部，相册选择和格式选择-->
+		        <div id="uploader" >
+
+		            <div class="item_container">
+		                <div id="" class="queueList" >
+		                    <div id="dndArea" class="placeholder">
+		                        <div id="filePicker"></div>
+		                    </div>
+		                </div>
+		            </div>
+		            <div class="statusBar" style="display:none;">
+		                <div class="progress">
+		                    <span class="text">0%</span>
+		                    <span class="percentage"></span>
+		                </div><div class="info"></div>
+		                <div class="btns">
+		                    <div id="filePicker2"></div><div class="uploadBtn">开始上传</div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+
+		<br><br><br>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-12">
+
+					<button id="fat-btn" class="btn btn-primary" data-loading-text="重建中..." type="button" style="height: 50px; width:900px; font-size:20px; margin: -10px;"> 开始重建
+					</button>
+					<script>
+					    $(function() {
+					        $(".btn").click(function(){
+					            $(this).button('loading').delay(1000).queue(function() {
+					            // $(this).button('reset');
+					            // $(this).dequeue();
+					            });
+					        });
+					    });
+					</script>
+				</div>
+			</div>
+		</div>
+	</div>
+	<footer style="background:#1a1a1a; background-size:100% 100%; height:80px;">
+		<div class="container" style="width: 1200px;">
+		  <div class="row">
+			<div class="col-md-5"></div>
+			<div class="col-md-4" style="margin-top: 30px; color: #A6A6A6; font-size:15px;">如有问题请联系：QQ839808679</div>
+			<div class="col-md-3"></div>
+		</div>
+  	</footer>
+
+	<script src="js/webuploader.js"></script>
+	<script src="js/jquery.sortable.js"></script>
+	<script src="js/upload.js"></script>
+	<script src="js/formsub.js"></script>
+</body>
+</html>
